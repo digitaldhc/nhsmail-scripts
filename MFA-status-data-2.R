@@ -64,3 +64,4 @@ if (!file.exists(timeseriesloc)) {
   # Save the resulting dataset back to the monthly file
   write.csv(df_merged, file = timeseriesloc, row.names = FALSE)
 }
+

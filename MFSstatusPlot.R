@@ -1,11 +1,11 @@
 # SET COMMON VARIABLES ----
 
 # set working directory where the mailbox report can be found
-setwd("c:/b")
+setwd("c:/github/nhsmail-scripts")
 
 # set file path where you want to keep time series data as a CSV
 # you may want this to be somewhere that gets backed up
-timeseriesloc <- "j:/MFAstatusTimeSeries.csv"
+timeseriesloc <- "j:/MFAstatusTimeSeries2023.csv"
 
 # Install the pacman package to call all the other packages
 if (!require("pacman")) install.packages("pacman")
@@ -18,7 +18,8 @@ pacman::p_load(
   utils,
   lubridate,
   ggthemes,
-  ggtext
+  ggtext,
+  scales
 )
 
 # IMPORT DATASETS ----
@@ -34,7 +35,7 @@ df$date = as.Date(df$date, "%Y-%m-%d")
 
 # PLOT DATA ----
 
-# create the plot
+# create the overall plot
 df_plot <- ggplot() +
   # plot line data
   geom_line(data = df, aes(x = date, y = n, group = MFAStatus, colour = MFAStatus), size = 2) +
@@ -61,3 +62,31 @@ df_plot <- ggplot() +
     strip.text.y = element_text(size = 9.5))
 
 df_plot
+
+# create the faceted plot
+df_plot_facet <- ggplot() +
+  # plot line data
+  geom_line(data = df, aes(x = date, y = n, group = MFAStatus, colour = MFAStatus), size = 2) +
+  facet_wrap(~ MFAStatus, scales = "free") +
+  scale_x_date(date_labels = "%d %b") +
+  scale_colour_discrete("MFA status") +
+  scale_y_continuous(breaks = pretty_breaks()) +
+  ylab("NHSmail accounts") +
+  xlab("Date") +
+  ggtitle("NHSmail multi-factor authentication uptake - detailed view") +
+  # set theme
+  theme_base() +
+  theme(
+    axis.text.x = element_text(size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 8),
+    legend.text = element_text(size = 12),
+    legend.background = element_blank(),
+    legend.box.background = element_rect(colour = "black"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 8),
+    strip.text.y = element_text(size = 9.5))
+
+df_plot_facet
